@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ dark: localStorage.dark === 'true' }"
+      :class="{ 'dark': dark }"
+      x-init="$watch('dark', val => localStorage.dark = val)">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ page.title }} · {{ site.title }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0/dist/tailwind.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    /* Tailwind’s dark mode class strategy: */
+    .dark body { @apply bg-gray-900 text-gray-100; }
+    body { @apply bg-white text-gray-900 transition-colors duration-300; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-semibold">
+      <a href="/" class="hover:underline">{{ site.title }}</a>
+    </h1>
+    <button @click="dark = !dark" class="focus:outline-none">
+      <template x-if="!dark">
+        <span>🌙</span>
+      </template>
+      <template x-if="dark">
+        <span>☀️</span>
+      </template>
+    </button>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 space-y-8">
+    {{ content }}
+  </main>
+
+  <footer class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+    © {{ site.time | date: "%Y" }} • Built with Jekyll
+  </footer>
+</body>
+</html>
