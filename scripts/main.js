@@ -1,11 +1,31 @@
 // ============================================
 // MAIN.JS — Gautam Portfolio
-// Handles: theme toggle, nav scroll, GSAP
-// animations, circuit canvas, hamburger menu
+// Handles: Lenis smooth scroll, GSAP animations,
+// Splitting.js hero, magnetic cursor, horizontal
+// project reel, scroll progress bar, page transitions
 // ============================================
 
-// ---- Register GSAP plugins ----
 gsap.registerPlugin(ScrollTrigger);
+
+// ============================================
+// REDUCED MOTION CHECK
+// ============================================
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ============================================
+// LENIS — Smooth Scroll
+// ============================================
+const lenis = new Lenis({
+  duration: 1.2,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smoothWheel: true,
+});
+
+// Connect Lenis to GSAP ticker for ScrollTrigger sync
+gsap.ticker.add((time) => lenis.raf(time * 1000));
+gsap.ticker.lagSmoothing(0);
+
+lenis.on('scroll', ScrollTrigger.update);
 
 // ============================================
 // THEME TOGGLE
@@ -19,6 +39,16 @@ themeToggle?.addEventListener('click', () => {
   html.setAttribute('data-theme', next);
   localStorage.setItem('theme', next);
 });
+
+// ============================================
+// SCROLL PROGRESS BAR
+// ============================================
+const scrollProgress = document.getElementById('scrollProgress');
+if (scrollProgress) {
+  lenis.on('scroll', ({ progress }) => {
+    scrollProgress.style.width = `${progress * 100}%`;
+  });
+}
 
 // ============================================
 // NAV — blur on scroll + active section
@@ -67,13 +97,64 @@ navLinksContainer?.querySelectorAll('a').forEach(link => {
 });
 
 // ============================================
+// CUSTOM MAGNETIC CURSOR
+// ============================================
+const cursorDot = document.getElementById('cursorDot');
+const cursorRing = document.getElementById('cursorRing');
+
+if (cursorDot && cursorRing && window.matchMedia('(hover: hover)').matches) {
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+  const magneticEls = document.querySelectorAll(
+    '.btn, .nav-link, .project-card, .contact-link, .blog-card, .skill-chip, .trait-chip, .theme-toggle'
+  );
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    gsap.to(cursorDot, {
+      x: mouseX,
+      y: mouseY,
+      duration: 0.12,
+      ease: 'power3.out',
+    });
+  });
+
+  // Lag the ring for a trailing feel
+  (function animateRing() {
+    ringX += (mouseX - ringX) * 0.1;
+    ringY += (mouseY - ringY) * 0.1;
+    gsap.set(cursorRing, { x: ringX, y: ringY });
+    requestAnimationFrame(animateRing);
+  })();
+
+  // Hover state — magnetic pull toward element center
+  magneticEls.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursorDot.classList.add('hovering');
+      cursorRing.classList.add('hovering');
+    });
+    el.addEventListener('mouseleave', () => {
+      cursorDot.classList.remove('hovering');
+      cursorRing.classList.remove('hovering');
+    });
+  });
+
+  document.addEventListener('mouseleave', () => {
+    gsap.to([cursorDot, cursorRing], { opacity: 0, duration: 0.3 });
+  });
+  document.addEventListener('mouseenter', () => {
+    gsap.to([cursorDot, cursorRing], { opacity: 1, duration: 0.3 });
+  });
+}
+
+// ============================================
 // CIRCUIT CANVAS ANIMATION
-// Draws animated circuit trace lines
-// Only runs on pages that have #circuit-canvas
 // ============================================
 (function initCircuit() {
   const canvas = document.getElementById('circuit-canvas');
-  if (!canvas) return; // safe exit on blog/other pages
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
   let W, H, nodes, animFrame;
@@ -116,7 +197,7 @@ navLinksContainer?.querySelectorAll('a').forEach(link => {
     };
   }
 
-  function draw(ts) {
+  function draw() {
     ctx.clearRect(0, 0, W, H);
 
     nodes.forEach(n => {
@@ -138,7 +219,6 @@ navLinksContainer?.querySelectorAll('a').forEach(link => {
       }
       ctx.stroke();
 
-      // Dot at end
       if (n.dot && n.progress > GRID) {
         const ex = n.dir === 'h' ? n.x + drawn : n.x;
         const ey = n.dir === 'h' ? n.y : n.y + drawn;
@@ -150,7 +230,6 @@ navLinksContainer?.querySelectorAll('a').forEach(link => {
 
       ctx.restore();
 
-      // Reset when done
       if (n.progress >= n.len) {
         Object.assign(n, createLine());
       }
@@ -165,23 +244,48 @@ navLinksContainer?.querySelectorAll('a').forEach(link => {
 })();
 
 // ============================================
-// HERO ENTRANCE ANIMATION
+// HERO — Cinematic Letter-by-Letter Reveal
+// (Splitting.js breaks "Gautam" into .char spans)
 // ============================================
+if (typeof Splitting !== 'undefined') {
+  Splitting(); // splits all [data-splitting] elements
+}
 
-// Check for reduced motion preference
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const heroName = document.getElementById('hero-name');
+const heroChars = heroName?.querySelectorAll('.char');
 
-// Set initial states BEFORE defining the timeline (prevents 1-frame flash)
-gsap.set('#hero-eyebrow, #hero-name, #hero-tagline, #hero-status, #hero-cta', {
+// Set initial states
+gsap.set('#hero-eyebrow, #hero-tagline, #hero-status, #hero-cta', {
   opacity: prefersReducedMotion ? 1 : 0,
   y: prefersReducedMotion ? 0 : 30,
 });
 
+if (heroChars?.length) {
+  gsap.set(heroChars, {
+    opacity: prefersReducedMotion ? 1 : 0,
+    y: prefersReducedMotion ? 0 : 80,
+    rotateX: prefersReducedMotion ? 0 : -90,
+    transformOrigin: '50% 100%',
+    filter: prefersReducedMotion ? 'none' : 'blur(8px)',
+  });
+}
+
 if (!prefersReducedMotion) {
-  const heroTl = gsap.timeline({ delay: 0.2 });
+  const heroTl = gsap.timeline({ delay: 0.15 });
+
   heroTl
-    .to('#hero-eyebrow', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
-    .to('#hero-name',    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.3')
+    .to('#hero-eyebrow', {
+      opacity: 1, y: 0, duration: 0.6, ease: 'power3.out'
+    })
+    .to(heroChars, {
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      filter: 'blur(0px)',
+      duration: 0.7,
+      stagger: { each: 0.07, ease: 'power2.out' },
+      ease: 'back.out(1.4)',
+    }, '-=0.2')
     .to('#hero-tagline', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, '-=0.3')
     .to('#hero-status',  { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2')
     .to('#hero-cta',     { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2');
@@ -195,22 +299,24 @@ gsap.utils.toArray('.reveal-up').forEach(el => {
     gsap.set(el, { opacity: 1, y: 0 });
     return;
   }
-  gsap.to(el, {
-    scrollTrigger: {
-      trigger: el,
-      start: 'top 88%',
-      toggleActions: 'play none none none',
-    },
-    opacity: 1,
-    y: 0,
-    duration: 0.75,
-    ease: 'power3.out',
-  });
+  gsap.fromTo(el,
+    { opacity: 0, y: 40 },
+    {
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 88%',
+        toggleActions: 'play none none none',
+      },
+      opacity: 1,
+      y: 0,
+      duration: 0.75,
+      ease: 'power3.out',
+    }
+  );
 });
 
 // ============================================
 // SCROLL REVEAL — Cards (staggered per group)
-// Fixed: use WeakMap to key groups by DOM node
 // ============================================
 const cardGroupMap = new Map();
 document.querySelectorAll('.reveal-card').forEach(card => {
@@ -225,18 +331,21 @@ cardGroupMap.forEach((group, parent) => {
     gsap.set(group, { opacity: 1, y: 0 });
     return;
   }
-  gsap.to(group, {
-    scrollTrigger: {
-      trigger: parent,
-      start: 'top 82%',
-      toggleActions: 'play none none none',
-    },
-    opacity: 1,
-    y: 0,
-    duration: 0.7,
-    stagger: 0.12,
-    ease: 'power3.out',
-  });
+  gsap.fromTo(group,
+    { opacity: 0, y: 50 },
+    {
+      scrollTrigger: {
+        trigger: parent,
+        start: 'top 82%',
+        toggleActions: 'play none none none',
+      },
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      stagger: 0.12,
+      ease: 'power3.out',
+    }
+  );
 });
 
 // ============================================
@@ -255,18 +364,21 @@ if (timelineEl && timelineItems.length) {
       start: 'top 75%',
       onEnter: () => timelineEl.classList.add('animated'),
     });
-    gsap.to(timelineItems, {
-      scrollTrigger: {
-        trigger: timelineEl,
-        start: 'top 80%',
-        toggleActions: 'play none none none',
-      },
-      opacity: 1,
-      x: 0,
-      duration: 0.65,
-      stagger: 0.18,
-      ease: 'power3.out',
-    });
+    gsap.fromTo(timelineItems,
+      { opacity: 0, x: -30 },
+      {
+        scrollTrigger: {
+          trigger: timelineEl,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        },
+        opacity: 1,
+        x: 0,
+        duration: 0.65,
+        stagger: 0.18,
+        ease: 'power3.out',
+      }
+    );
   }
 }
 
@@ -319,7 +431,77 @@ if (traitChips.length) {
 }
 
 // ============================================
+// HORIZONTAL SCROLL REEL — Projects
+// Pins the reel section and moves cards left
+// ============================================
+(function initHorizontalReel() {
+  const track = document.getElementById('projectsTrack');
+  const wrapper = document.getElementById('projectsReel');
+  const section = document.getElementById('projects');
+  if (!track || !wrapper || !section || prefersReducedMotion) return;
+
+  const isDesktop = () => window.innerWidth > 768;
+
+  function buildReel() {
+    ScrollTrigger.getAll()
+      .filter(st => st.vars?.id === 'projects-reel')
+      .forEach(st => st.kill());
+
+    if (!isDesktop()) {
+      gsap.set(track, { x: 0 });
+      return;
+    }
+
+    const totalWidth = track.scrollWidth;
+    const viewportWidth = window.innerWidth;
+    const scrollDistance = totalWidth - viewportWidth + 80;
+
+    gsap.to(track, {
+      x: -scrollDistance,
+      ease: 'none',
+      scrollTrigger: {
+        id: 'projects-reel',
+        trigger: section,        // pin whole section — starts when heading hits top
+        pin: true,
+        scrub: 1,
+        start: 'top top',
+        end: () => `+=${scrollDistance}`,
+        invalidateOnRefresh: true,
+        anticipatePin: 1,
+      },
+    });
+  }
+
+  buildReel();
+  window.addEventListener('resize', () => {
+    ScrollTrigger.refresh();
+    buildReel();
+  }, { passive: true });
+
+  // Show reel hint
+  const reelHint = document.querySelector('.reel-hint');
+  if (reelHint) {
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top 80%',
+      onEnter: () => reelHint.classList.add('visible'),
+    });
+  }
+
+  // Mobile fallback stagger
+  const projectCards = document.querySelectorAll('.project-card');
+  if (!isDesktop() && projectCards.length) {
+    gsap.set(projectCards, { opacity: 0, y: 40 });
+    gsap.to(projectCards, {
+      scrollTrigger: { trigger: wrapper, start: 'top 80%' },
+      opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out',
+    });
+  }
+})();
+
+// ============================================
 // SMOOTH SCROLL for anchor links
+// (Works with Lenis)
 // ============================================
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
@@ -327,6 +509,41 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     const target = document.getElementById(id);
     if (!target) return;
     e.preventDefault();
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    lenis.scrollTo(target, { offset: -80, duration: 1.2 });
   });
+});
+
+// ============================================
+// PAGE TRANSITION — exit animation on navigate
+// ============================================
+const pageTransitionEl = document.getElementById('pageTransition');
+
+function triggerPageExit(href) {
+  if (!pageTransitionEl) { window.location.href = href; return; }
+
+  gsap.to(pageTransitionEl, {
+    scaleY: 1,
+    duration: 0.55,
+    ease: 'power4.inOut',
+    transformOrigin: 'bottom',
+    onComplete: () => { window.location.href = href; },
+  });
+}
+
+// Intercept all same-origin non-anchor link clicks
+document.querySelectorAll('a:not([href^="#"]):not([target="_blank"]):not([href^="mailto"])').forEach(link => {
+  const href = link.getAttribute('href');
+  if (!href || href.startsWith('http') || href.startsWith('//')) return;
+
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    triggerPageExit(href);
+  });
+});
+
+// Reveal page on enter (in case browser back button returns here)
+window.addEventListener('pageshow', () => {
+  if (pageTransitionEl) {
+    gsap.set(pageTransitionEl, { scaleY: 0, transformOrigin: 'top' });
+  }
 });

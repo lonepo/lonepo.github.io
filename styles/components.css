@@ -199,12 +199,19 @@
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.04em;
-  background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-green) 100%);
+  margin-bottom: 1.5rem;
+  opacity: 1; /* GSAP controls via chars now */
+  perspective: 600px;
+}
+
+/* Each character gets the gradient */
+.hero-name .char {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-green) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 1.5rem;
-  opacity: 0;
+  will-change: transform, opacity, filter;
 }
 
 .hero-tagline {
@@ -351,7 +358,7 @@
   border-radius: 6px;
   border: 1px solid;
   font-weight: 400;
-  transition: all var(--transition);
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
   cursor: default;
 }
 
@@ -361,9 +368,10 @@
   background: rgba(61,220,132,0.05);
 }
 .skill-chip.green:hover {
-  background: rgba(61,220,132,0.15);
+  background: rgba(61,220,132,0.18);
   border-color: var(--accent-green);
-  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(61,220,132,0.3);
+  transform: translateY(-3px) scale(1.04);
 }
 
 .skill-chip.blue {
@@ -372,9 +380,10 @@
   background: rgba(77,166,255,0.05);
 }
 .skill-chip.blue:hover {
-  background: rgba(77,166,255,0.15);
+  background: rgba(77,166,255,0.18);
   border-color: var(--accent-blue);
-  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(77,166,255,0.3);
+  transform: translateY(-3px) scale(1.04);
 }
 
 .skill-chip.orange {
@@ -383,16 +392,30 @@
   background: rgba(255,140,66,0.05);
 }
 .skill-chip.orange:hover {
-  background: rgba(255,140,66,0.15);
+  background: rgba(255,140,66,0.18);
   border-color: var(--accent-orange);
-  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(255,140,66,0.3);
+  transform: translateY(-3px) scale(1.04);
 }
 
-/* ==================== PROJECTS ==================== */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+/* ==================== PROJECTS REEL ==================== */
+.projects-section {
+  padding-bottom: 5rem;
+  overflow: visible;
+}
+
+.projects-reel-wrapper {
+  position: relative;
+  overflow: hidden;
+  margin-top: 2rem;
+}
+
+.projects-track {
+  display: flex;
   gap: 1.5rem;
+  padding: 2rem 2.5rem 3rem;
+  will-change: transform;
+  width: max-content;
 }
 
 .project-card {
@@ -402,15 +425,42 @@
   border-radius: var(--radius);
   padding: 2rem;
   overflow: hidden;
-  transition: border-color var(--transition), background var(--transition), transform var(--transition), box-shadow var(--transition);
-  cursor: default;
+  width: 340px;
+  flex-shrink: 0;
+  transition: border-color 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+  cursor: pointer;
 }
 
 .project-card:hover {
   border-color: var(--accent-orange);
-  background: var(--bg-card-hover);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px var(--glow-orange);
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px var(--glow-orange), 0 0 0 1px rgba(255,140,66,0.08);
+}
+
+/* Slide-up overlay on hover */
+.project-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(255,140,66,0.18) 0%, transparent 60%);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.5rem 2rem;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
+  z-index: 2;
+  border-radius: var(--radius);
+}
+
+.project-overlay span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent-orange);
+  letter-spacing: 0.05em;
+}
+
+.project-card:hover .project-overlay {
+  transform: translateY(0);
 }
 
 .project-card:hover .project-accent {
@@ -423,8 +473,40 @@
   width: 3px; height: 100%;
   background: linear-gradient(180deg, var(--accent-orange), transparent);
   opacity: 0;
-  transition: opacity var(--transition);
+  transition: opacity 0.35s ease;
 }
+
+.reel-hint {
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding-bottom: 2rem;
+  animation: reel-pulse 2s ease-in-out infinite;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.reel-hint.visible { opacity: 1; }
+
+@keyframes reel-pulse {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 768px) {
+  .projects-track {
+    flex-direction: column;
+    width: auto;
+    padding: 1.5rem;
+  }
+  .project-card {
+    width: 100%;
+  }
+}
+
 
 .project-number {
   font-family: 'JetBrains Mono', monospace;
