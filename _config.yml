@@ -1,6 +1,0 @@
-title: Your Blog Title
-description: >
-  A minimal dark-mode blog.
-theme: minima      # we’ll override most of it
-plugins: []
-markdown: kramdown

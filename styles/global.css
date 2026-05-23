@@ -1,0 +1,167 @@
+/* ============================================
+   GLOBAL CSS — Gautam Portfolio
+   Design: Dark-first, Green/Blue/Orange palette
+   Font: Outfit (display+body) + JetBrains Mono
+============================================ */
+
+/* ---- CSS Variables (Dark Theme Default) ---- */
+:root {
+  --bg-primary:    #080e0b;
+  --bg-secondary:  #0f1a12;
+  --bg-tertiary:   #182019;
+  --bg-card:       #111a14;
+  --bg-card-hover: #162019;
+
+  --accent-green:  #3ddc84;
+  --accent-blue:   #4da6ff;
+  --accent-orange: #ff8c42;
+
+  --text-primary:  #e2f0e8;
+  --text-secondary:#7a9e8a;
+  --text-muted:    #3f5e4a;
+
+  --border:        rgba(61, 220, 132, 0.1);
+  --border-hover:  rgba(61, 220, 132, 0.3);
+  --glow-green:    rgba(61, 220, 132, 0.12);
+  --glow-blue:     rgba(77, 166, 255, 0.12);
+  --glow-orange:   rgba(255, 140, 66, 0.12);
+
+  --nav-bg:        rgba(8, 14, 11, 0.85);
+  --transition:    0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --radius:        12px;
+}
+
+/* ---- Light Theme ---- */
+[data-theme="light"] {
+  --bg-primary:    #f3f8f5;
+  --bg-secondary:  #e8f2ec;
+  --bg-tertiary:   #ddeee4;
+  --bg-card:       #ffffff;
+  --bg-card-hover: #f0faf4;
+
+  --accent-green:  #1a9e57;
+  --accent-blue:   #1a6fcc;
+  --accent-orange: #d4621a;
+
+  --text-primary:  #0d1f17;
+  --text-secondary:#3a5a45;
+  --text-muted:    #7aa080;
+
+  --border:        rgba(26, 158, 87, 0.15);
+  --border-hover:  rgba(26, 158, 87, 0.4);
+  --glow-green:    rgba(26, 158, 87, 0.08);
+  --glow-blue:     rgba(26, 111, 204, 0.08);
+  --glow-orange:   rgba(212, 98, 26, 0.08);
+
+  --nav-bg:        rgba(243, 248, 245, 0.85);
+}
+
+/* ---- Base Reset ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+/* ---- Typography Scale ---- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img { max-width: 100%; display: block; }
+ul { list-style: none; }
+
+/* ---- Layout Helpers ---- */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section {
+  padding: 8rem 0;
+}
+
+.section-alt {
+  background-color: var(--bg-secondary);
+}
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent-green);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 3rem;
+  line-height: 1.1;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin-top: -2rem;
+  margin-bottom: 3rem;
+  max-width: 600px;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-green); }
+
+/* ---- Selection ---- */
+::selection {
+  background: var(--accent-green);
+  color: var(--bg-primary);
+}
+
+/* ---- Animation: initial invisible states ---- */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.reveal-card {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.reveal-timeline {
+  opacity: 0;
+  transform: translateX(-30px);
+}

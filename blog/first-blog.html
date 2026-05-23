@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>First Blog · Gautam</title>
+  <meta name="description" content="Starting somewhere is always the hardest part. Here's what's on my mind as I open this little corner of the internet." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../styles/global.css" />
+  <link rel="stylesheet" href="../styles/components.css" />
+  <link rel="stylesheet" href="../styles/blog.css" />
+
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav scrolled" id="nav">
+    <a href="../" class="nav-logo">G<span class="logo-dot">.</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="../#about" class="nav-link">About</a></li>
+      <li><a href="../#projects" class="nav-link">Projects</a></li>
+      <li><a href="../blog/" class="nav-link active">Blog</a></li>
+      <li><a href="../#contact" class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- POST HEADER -->
+  <header class="post-header">
+    <div class="container">
+      <a href="./index.html" class="post-back">← All posts</a>
+      <div class="post-meta">
+        <span class="post-date">May 23, 2026</span>
+        <span class="post-read-time">3 min read</span>
+        <div class="post-tags">
+          <span class="tag blue">thoughts</span>
+        </div>
+      </div>
+      <h1 class="post-title">First Blog</h1>
+      <p class="post-excerpt">Starting somewhere is always the hardest part. Here's what's on my mind as I open this little corner of the internet.</p>
+    </div>
+  </header>
+
+  <!-- POST BODY -->
+  <main class="post-body">
+    <div class="container">
+      <article class="prose">
+
+        <p>Everyone starts with a first post. Most of them begin the same way — "I finally decided to start a blog" — and then go on to explain why. I'll skip that part. You're already here.</p>
+
+        <p>I'm Gautam. I study Electrical Engineering, run Linux on everything I can get my hands on, tinker with hardware when I probably should be studying, and have a habit of connecting things that most people think have nothing to do with each other.</p>
+
+        <h2>Why even bother with a blog?</h2>
+
+        <p>Honestly? Because I learn by writing. When I try to explain something — to a friend, in a README, in a forum post — I find the gaps in my own understanding pretty fast. Writing forces precision. It's uncomfortable in a productive way.</p>
+
+        <p>Also, I want a place that's <strong>mine</strong>. Not a profile on a platform that can change its algorithm tomorrow, not a thread in a closed Discord, not a document that lives only on my hard drive. Just a place I control, on a domain I own, where I can put things I think are worth keeping.</p>
+
+        <h2>What will I write about?</h2>
+
+        <p>Probably a mix of things I'm building, things I'm learning, and things I'm thinking about. Some of it will be technical — electronics projects, embedded systems experiments, Linux setups, AI experiments. Some of it will be less technical — thoughts on open-source culture, sustainability, what it means to build things that actually help people.</p>
+
+        <p>I'll probably write about:</p>
+        <ul>
+          <li>Projects I'm working on (like the blind navigation system I'm building right now)</li>
+          <li>Things I've learned the hard way</li>
+          <li>FOSS tools and Linux setups worth knowing about</li>
+          <li>Thoughts on AI — what's real, what's hype, what's actually useful</li>
+          <li>Power electronics and sustainability</li>
+          <li>Whatever else I feel like, honestly</li>
+        </ul>
+
+        <h2>One more thing</h2>
+
+        <p>This site has no trackers, no analytics, no cookies, and no newsletter popups. If you find something here useful, that's enough. If you want to get in touch, my email is in the footer. No subscription required.</p>
+
+        <blockquote>
+          "The best time to start was yesterday. The second best time is now."
+        </blockquote>
+
+        <p>Thanks for reading.</p>
+
+        <hr />
+
+        <p><em>— Gautam</em></p>
+
+      </article>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Gautam · <a href="../blog/" style="color:var(--accent-green)">← Back to blog</a></p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const h = document.documentElement;
+      const next = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      h.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+    const ham = document.getElementById('hamburger');
+    const nl  = document.getElementById('nav-links');
+    ham?.addEventListener('click', () => nl.classList.toggle('open'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gautam · EE Student & Tinkerer</title>
+  <meta name="description" content="EE student. Open-source tinkerer. Quietly making the world better. Portfolio of Gautam — electronics, AI, FOSS, and sustainability." />
+  <meta property="og:title" content="Gautam · EE Student & Tinkerer" />
+  <meta property="og:description" content="EE student. Open-source tinkerer. Quietly making the world better." />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Lottie -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+
+  <link rel="stylesheet" href="styles/global.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+
+  <!-- Inline theme init to prevent flash -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav" id="nav">
+    <a href="/" class="nav-logo" aria-label="Home">G<span class="logo-dot">.</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#skills" class="nav-link">Skills</a></li>
+      <li><a href="#projects" class="nav-link">Projects</a></li>
+      <li><a href="#achievements" class="nav-link">Wins</a></li>
+      <li><a href="#blog" class="nav-link">Blog</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <canvas id="circuit-canvas"></canvas>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow" id="hero-eyebrow">Hello, I'm</p>
+      <h1 class="hero-name" id="hero-name">Gautam</h1>
+      <p class="hero-tagline" id="hero-tagline">EE student. Open-source tinkerer.<br>Quietly making the world better.</p>
+      <div class="hero-status" id="hero-status">
+        <span class="status-dot"></span>
+        <span class="status-text">
+          Building: <span class="status-accent">Blind Nav System</span> &nbsp;·&nbsp;
+          Listening: <span class="status-accent">Music</span>
+        </span>
+      </div>
+      <div class="hero-cta" id="hero-cta">
+        <a href="#projects" class="btn btn-primary">See My Work ↓</a>
+        <a href="https://github.com/lonepo" class="btn btn-ghost" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">scroll</div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-label">01 — About</div>
+      <h2 class="section-title reveal-up">Who I Am</h2>
+      <div class="about-grid">
+        <div class="about-text reveal-up">
+          <p>I'm an <span class="highlight-green">Electrical Engineering student</span> who gets excited about connecting ideas that others think have nothing to do with each other — a power converter talking to a web dashboard, a Bluetooth signal guiding someone who can't see, an AI asking the right question at the right moment.</p>
+          <p>I run <span class="highlight-blue">Linux</span>, contribute to open-source, and believe the best software is the kind that gives people back their freedom. I tinker with hardware the same way — not to build impressive things, but to build <span class="highlight-orange">useful ones</span>.</p>
+          <p>I help people without expecting anything in return. That's just how I'm wired.</p>
+        </div>
+        <div class="about-chips reveal-up">
+          <div class="trait-chip"><span class="chip-icon">⚡</span> Electronics & Power</div>
+          <div class="trait-chip"><span class="chip-icon">🐧</span> FOSS & Linux</div>
+          <div class="trait-chip"><span class="chip-icon">🤖</span> AI & Embedded</div>
+          <div class="trait-chip"><span class="chip-icon">🌱</span> Sustainability</div>
+          <div class="trait-chip"><span class="chip-icon">🎵</span> Music Listener</div>
+          <div class="trait-chip"><span class="chip-icon">🔧</span> Hardware Tinkerer</div>
+          <div class="trait-chip"><span class="chip-icon">💡</span> Idea Connector</div>
+          <div class="trait-chip"><span class="chip-icon">🤝</span> Altruist Builder</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SKILLS ===== -->
+  <section class="section section-alt" id="skills">
+    <div class="container">
+      <div class="section-label">02 — Skills</div>
+      <h2 class="section-title reveal-up">Tech Stack</h2>
+      <div class="skills-categories">
+        <div class="skill-group reveal-up">
+          <h3 class="skill-group-label green">Hardware & Embedded</h3>
+          <div class="skill-chips">
+            <span class="skill-chip green">Raspberry Pi</span>
+            <span class="skill-chip green">ESP32</span>
+            <span class="skill-chip green">Arduino</span>
+            <span class="skill-chip green">PCB Design</span>
+            <span class="skill-chip green">INA219</span>
+            <span class="skill-chip green">Power Electronics</span>
+            <span class="skill-chip green">Buck Converter</span>
+            <span class="skill-chip green">Battery Management</span>
+            <span class="skill-chip green">Electrical Drives</span>
+            <span class="skill-chip green">Simulink</span>
+            <span class="skill-chip green">Measurements</span>
+          </div>
+        </div>
+        <div class="skill-group reveal-up">
+          <h3 class="skill-group-label blue">Software & AI</h3>
+          <div class="skill-chips">
+            <span class="skill-chip blue">Python</span>
+            <span class="skill-chip blue">IoT Systems</span>
+            <span class="skill-chip blue">AI / ML</span>
+            <span class="skill-chip blue">Robotics</span>
+            <span class="skill-chip blue">Signal Processing</span>
+            <span class="skill-chip blue">Web Dashboards</span>
+            <span class="skill-chip blue">HTML / CSS / JS</span>
+            <span class="skill-chip blue">Embedded C</span>
+            <span class="skill-chip blue">Bluetooth RSSI</span>
+          </div>
+        </div>
+        <div class="skill-group reveal-up">
+          <h3 class="skill-group-label orange">Tools & Philosophy</h3>
+          <div class="skill-chips">
+            <span class="skill-chip orange">Linux</span>
+            <span class="skill-chip orange">FOSS</span>
+            <span class="skill-chip orange">Git</span>
+            <span class="skill-chip orange">Cybersecurity</span>
+            <span class="skill-chip orange">Microcontrollers</span>
+            <span class="skill-chip orange">Communication</span>
+            <span class="skill-chip orange">Analytical Reasoning</span>
+            <span class="skill-chip orange">IIoT (Platinum)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS ===== -->
+  <section class="section" id="projects">
+    <div class="container">
+      <div class="section-label">03 — Work</div>
+      <h2 class="section-title reveal-up">Projects</h2>
+      <div class="projects-grid">
+
+        <article class="project-card reveal-card" data-index="0">
+          <div class="project-number">01</div>
+          <div class="project-content">
+            <h3 class="project-title">Buck Converter with Efficiency Analyser</h3>
+            <p class="project-desc">Designed a single-board Buck converter integrating input/output power measurement via INA219 modules, enabling real-time efficiency analysis without external instrumentation.</p>
+            <div class="project-tags">
+              <span class="tag green">PCB Design</span>
+              <span class="tag green">INA219</span>
+              <span class="tag green">Power Electronics</span>
+              <span class="tag blue">Embedded C</span>
+            </div>
+          </div>
+          <div class="project-accent"></div>
+        </article>
+
+        <article class="project-card reveal-card" data-index="1">
+          <div class="project-number">02</div>
+          <div class="project-content">
+            <h3 class="project-title">IoT Assistive Robot for Elderly & Disabled</h3>
+            <p class="project-desc">Building a custom assistive robot using Raspberry Pi and ESP32 to help elderly and disabled individuals with daily tasks — a project that sits at the intersection of empathy and engineering.</p>
+            <div class="project-tags">
+              <span class="tag green">Raspberry Pi</span>
+              <span class="tag green">ESP32</span>
+              <span class="tag blue">Python</span>
+              <span class="tag blue">IoT</span>
+            </div>
+          </div>
+          <div class="project-accent"></div>
+        </article>
+
+        <article class="project-card reveal-card" data-index="2">
+          <div class="project-number">03</div>
+          <div class="project-content">
+            <h3 class="project-title">Custom Assembly Line Robot — TVS Eurogrip</h3>
+            <p class="project-desc">Designed a specialised robot to automate fixing parts into tyres and strapping them on a production line, enhancing throughput and reducing manual error in an industrial setting.</p>
+            <div class="project-tags">
+              <span class="tag green">Robotics</span>
+              <span class="tag green">Embedded Systems</span>
+              <span class="tag orange">Industrial IoT</span>
+            </div>
+          </div>
+          <div class="project-accent"></div>
+        </article>
+
+        <article class="project-card reveal-card" data-index="3">
+          <div class="project-number">04</div>
+          <div class="project-content">
+            <h3 class="project-title">AI-Guided Learning Platform</h3>
+            <p class="project-desc">Developed an intelligent platform that asks contextual questions mid-video to reinforce understanding. Won Runner-Up at the Amazon × TCS Daksh AI Hackathon (₹50,000 prize).</p>
+            <div class="project-tags">
+              <span class="tag blue">AI / ML</span>
+              <span class="tag blue">Python</span>
+              <span class="tag blue">Web</span>
+              <span class="tag orange">🏆 ₹50,000</span>
+            </div>
+          </div>
+          <div class="project-accent"></div>
+        </article>
+
+        <article class="project-card reveal-card" data-index="4">
+          <div class="project-number">05</div>
+          <div class="project-content">
+            <h3 class="project-title">Blind Indoor Navigation System</h3>
+            <p class="project-desc">Currently developing a Bluetooth RSSI-based navigation system to help visually impaired individuals move independently in indoor environments where GPS is unavailable.</p>
+            <div class="project-tags">
+              <span class="tag green">Bluetooth RSSI</span>
+              <span class="tag green">ESP32</span>
+              <span class="tag blue">Signal Processing</span>
+              <span class="tag orange">Accessibility</span>
+            </div>
+          </div>
+          <div class="project-accent"></div>
+        </article>
+
+        <article class="project-card reveal-card" data-index="5">
+          <div class="project-number">06</div>
+          <div class="project-content">
+            <h3 class="project-title">Live Power Generation Dashboard</h3>
+            <p class="project-desc">Built a real-time web dashboard to monitor RPM-based power generation metrics, visualising live data with clean, responsive UI and WebSocket-driven updates.</p>
+            <div class="project-tags">
+              <span class="tag blue">HTML / CSS / JS</span>
+              <span class="tag blue">WebSocket</span>
+              <span class="tag green">Power Monitoring</span>
+            </div>
+          </div>
+          <div class="project-accent"></div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACHIEVEMENTS ===== -->
+  <section class="section section-alt" id="achievements">
+    <div class="container">
+      <div class="section-label">04 — Recognition</div>
+      <h2 class="section-title reveal-up">Wins & Certs</h2>
+      <div class="timeline">
+
+        <div class="timeline-item reveal-timeline">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-badge orange">₹50,000 · Runner-Up</span>
+            <h3 class="timeline-title">Amazon × TCS Daksh AI Hackathon, SASTRA</h3>
+            <p class="timeline-desc">AI-powered guided learning platform that improves retention in educational content.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal-timeline">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-badge blue">Exhibitor</span>
+            <h3 class="timeline-title">Tri-Services Symposium, New Delhi</h3>
+            <p class="timeline-desc">Exhibited the Medical Assistance Robot and proposed a novel V2V system for military vehicles.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal-timeline">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-badge orange">₹10,000 · Winner</span>
+            <h3 class="timeline-title">STEM Hackathon, DAKSH, SASTRA</h3>
+            <p class="timeline-desc">Built an animatronic bird, securing 1st place.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal-timeline">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-badge orange">₹3,000 · Winner</span>
+            <h3 class="timeline-title">Line Follower Robot Competition, IIIT Kanchipuram</h3>
+            <p class="timeline-desc">Designed and programmed an autonomous line-following robot, achieving 1st place.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal-timeline">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-badge green">Platinum Certificate</span>
+            <h3 class="timeline-title">Industrial Internet of Things (IIoT)</h3>
+            <p class="timeline-desc">Earned the highest course certification level from the Ministry of Heavy Industries, Government of India.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BLOG PREVIEW ===== -->
+  <section class="section" id="blog">
+    <div class="container">
+      <div class="section-label">05 — Writing</div>
+      <h2 class="section-title reveal-up">Blog</h2>
+      <p class="section-subtitle reveal-up">Thoughts on electronics, open-source, AI, and whatever else is on my mind.</p>
+      <div class="blog-grid">
+        <a href="blog/first-blog.html" class="blog-card reveal-card">
+          <div class="blog-card-meta">
+            <span class="blog-date">May 23, 2026</span>
+            <span class="blog-read-time">3 min read</span>
+          </div>
+          <h3 class="blog-card-title">First Blog</h3>
+          <p class="blog-card-excerpt">Starting somewhere is always the hardest part. Here's what's on my mind as I open this little corner of the internet.</p>
+          <div class="blog-card-tags">
+            <span class="tag blue">thoughts</span>
+          </div>
+          <span class="blog-card-cta">Read post →</span>
+        </a>
+        <!-- More posts appear here dynamically -->
+      </div>
+      <div class="blog-all-link reveal-up">
+        <a href="blog/" class="btn btn-ghost">All Posts →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section class="section section-alt" id="contact">
+    <div class="container contact-container">
+      <div class="section-label">06 — Let's Talk</div>
+      <h2 class="section-title reveal-up">Get In Touch</h2>
+      <p class="contact-sub reveal-up">Whether you want to collaborate, ask a question, or just say hi — I'm always happy to hear from people who build things.</p>
+      <div class="contact-links reveal-up">
+        <a href="mailto:gautam@example.com" class="contact-link" id="email-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          gautam@example.com
+        </a>
+        <a href="https://github.com/lonepo" class="contact-link" target="_blank" rel="noopener" id="github-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          github.com/lonepo
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Gautam · Built with ♥ and open-source tools</p>
+      <p class="footer-sub">No trackers. No frameworks. Just HTML, CSS, and JS.</p>
+    </div>
+  </footer>
+
+  <script src="scripts/main.js"></script>
+</body>
+</html>
