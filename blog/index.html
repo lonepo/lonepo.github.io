@@ -99,10 +99,14 @@
     const ham = document.getElementById('hamburger');
     const nl  = document.getElementById('nav-links');
     ham?.addEventListener('click', () => nl.classList.toggle('open'));
-    // Reveal
+    // Reveal cards — handle both in-viewport and scrolled-to cards
     gsap.utils.toArray('.reveal-card').forEach((el, i) => {
       gsap.from(el, {
-        scrollTrigger: { trigger: el, start: 'top 88%' },
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 100%',
+          toggleActions: 'play none none none'
+        },
         opacity: 0, y: 50, duration: 0.7, delay: i * 0.1, ease: 'power3.out'
       });
     });
