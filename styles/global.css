@@ -56,6 +56,22 @@
   --nav-bg:        rgba(243, 248, 245, 0.85);
 }
 
+/* ---- Skip Link (keyboard accessibility) ---- */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  background: var(--accent-green);
+  color: var(--bg-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 8px 8px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  z-index: 9999;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
 /* ---- Base Reset ---- */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -164,4 +180,22 @@ ul { list-style: none; }
 .reveal-timeline {
   opacity: 0;
   transform: translateX(-30px);
+}
+
+/* ---- Scroll margin for fixed nav ---- */
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal-up, .reveal-card, .reveal-timeline {
+    opacity: 1;
+    transform: none;
+  }
 }

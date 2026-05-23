@@ -69,10 +69,11 @@ navLinksContainer?.querySelectorAll('a').forEach(link => {
 // ============================================
 // CIRCUIT CANVAS ANIMATION
 // Draws animated circuit trace lines
+// Only runs on pages that have #circuit-canvas
 // ============================================
 (function initCircuit() {
   const canvas = document.getElementById('circuit-canvas');
-  if (!canvas) return;
+  if (!canvas) return; // safe exit on blog/other pages
   const ctx = canvas.getContext('2d');
 
   let W, H, nodes, animFrame;
@@ -166,24 +167,34 @@ navLinksContainer?.querySelectorAll('a').forEach(link => {
 // ============================================
 // HERO ENTRANCE ANIMATION
 // ============================================
-const heroTl = gsap.timeline({ delay: 0.2 });
-heroTl
-  .to('#hero-eyebrow', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
-  .to('#hero-name',    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.3')
-  .to('#hero-tagline', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, '-=0.3')
-  .to('#hero-status',  { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2')
-  .to('#hero-cta',     { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2');
 
-// Initial positions for hero elements
+// Check for reduced motion preference
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Set initial states BEFORE defining the timeline (prevents 1-frame flash)
 gsap.set('#hero-eyebrow, #hero-name, #hero-tagline, #hero-status, #hero-cta', {
-  opacity: 0,
-  y: 30
+  opacity: prefersReducedMotion ? 1 : 0,
+  y: prefersReducedMotion ? 0 : 30,
 });
+
+if (!prefersReducedMotion) {
+  const heroTl = gsap.timeline({ delay: 0.2 });
+  heroTl
+    .to('#hero-eyebrow', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
+    .to('#hero-name',    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.3')
+    .to('#hero-tagline', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, '-=0.3')
+    .to('#hero-status',  { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2')
+    .to('#hero-cta',     { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2');
+}
 
 // ============================================
 // SCROLL REVEAL — Section titles & text
 // ============================================
 gsap.utils.toArray('.reveal-up').forEach(el => {
+  if (prefersReducedMotion) {
+    gsap.set(el, { opacity: 1, y: 0 });
+    return;
+  }
   gsap.to(el, {
     scrollTrigger: {
       trigger: el,
@@ -199,20 +210,24 @@ gsap.utils.toArray('.reveal-up').forEach(el => {
 
 // ============================================
 // SCROLL REVEAL — Cards (staggered per group)
+// Fixed: use WeakMap to key groups by DOM node
 // ============================================
-// Group cards by their parent container
-const cardGroups = {};
+const cardGroupMap = new Map();
 document.querySelectorAll('.reveal-card').forEach(card => {
   const parent = card.parentElement;
-  if (!cardGroups.has) cardGroups[parent] = cardGroups[parent] || [];
-  cardGroups[parent].push(card);
+  if (!cardGroupMap.has(parent)) cardGroupMap.set(parent, []);
+  cardGroupMap.get(parent).push(card);
 });
 
-Object.values(cardGroups).forEach(group => {
+cardGroupMap.forEach((group, parent) => {
   if (!group.length) return;
+  if (prefersReducedMotion) {
+    gsap.set(group, { opacity: 1, y: 0 });
+    return;
+  }
   gsap.to(group, {
     scrollTrigger: {
-      trigger: group[0].parentElement,
+      trigger: parent,
       start: 'top 82%',
       toggleActions: 'play none none none',
     },
@@ -231,24 +246,28 @@ const timelineEl = document.querySelector('.timeline');
 const timelineItems = document.querySelectorAll('.reveal-timeline');
 
 if (timelineEl && timelineItems.length) {
-  ScrollTrigger.create({
-    trigger: timelineEl,
-    start: 'top 75%',
-    onEnter: () => timelineEl.classList.add('animated'),
-  });
-
-  gsap.to(timelineItems, {
-    scrollTrigger: {
+  if (prefersReducedMotion) {
+    timelineEl.classList.add('animated');
+    gsap.set(timelineItems, { opacity: 1, x: 0 });
+  } else {
+    ScrollTrigger.create({
       trigger: timelineEl,
-      start: 'top 80%',
-      toggleActions: 'play none none none',
-    },
-    opacity: 1,
-    x: 0,
-    duration: 0.65,
-    stagger: 0.18,
-    ease: 'power3.out',
-  });
+      start: 'top 75%',
+      onEnter: () => timelineEl.classList.add('animated'),
+    });
+    gsap.to(timelineItems, {
+      scrollTrigger: {
+        trigger: timelineEl,
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      },
+      opacity: 1,
+      x: 0,
+      duration: 0.65,
+      stagger: 0.18,
+      ease: 'power3.out',
+    });
+  }
 }
 
 // ============================================
@@ -256,6 +275,10 @@ if (timelineEl && timelineItems.length) {
 // ============================================
 document.querySelectorAll('.skill-group').forEach((group, gi) => {
   const chips = group.querySelectorAll('.skill-chip');
+  if (prefersReducedMotion) {
+    gsap.set(chips, { opacity: 1, y: 0 });
+    return;
+  }
   gsap.set(chips, { opacity: 0, y: 20 });
   gsap.to(chips, {
     scrollTrigger: {
@@ -277,18 +300,22 @@ document.querySelectorAll('.skill-group').forEach((group, gi) => {
 // ============================================
 const traitChips = document.querySelectorAll('.trait-chip');
 if (traitChips.length) {
-  gsap.set(traitChips, { opacity: 0, scale: 0.85 });
-  gsap.to(traitChips, {
-    scrollTrigger: {
-      trigger: '.about-chips',
-      start: 'top 85%',
-    },
-    opacity: 1,
-    scale: 1,
-    duration: 0.45,
-    stagger: 0.08,
-    ease: 'back.out(1.7)',
-  });
+  if (prefersReducedMotion) {
+    gsap.set(traitChips, { opacity: 1, scale: 1 });
+  } else {
+    gsap.set(traitChips, { opacity: 0, scale: 0.85 });
+    gsap.to(traitChips, {
+      scrollTrigger: {
+        trigger: '.about-chips',
+        start: 'top 85%',
+      },
+      opacity: 1,
+      scale: 1,
+      duration: 0.45,
+      stagger: 0.08,
+      ease: 'back.out(1.7)',
+    });
+  }
 }
 
 // ============================================
