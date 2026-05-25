@@ -11,5 +11,5 @@ animation-asset/*.png
 *.webm
 
 # Root-level jpeg dumps
-*.jpeg
-*.jpg
+#*.jpeg
+#*.jpg
