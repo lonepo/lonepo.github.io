@@ -547,3 +547,158 @@ window.addEventListener('pageshow', () => {
     gsap.set(pageTransitionEl, { scaleY: 0, transformOrigin: 'top' });
   }
 });
+
+// ============================================
+// SCROLL-DRIVEN FRAME ANIMATION
+// Bandwidth-adaptive: detect connection speed,
+// pick skip interval (1=all, 2=every-other, 4=skip3)
+// Preloads only needed frames, draws on canvas
+// ============================================
+(function initFrameAnim() {
+  const canvas  = document.getElementById('frameAnimCanvas');
+  const section = document.getElementById('frame-anim');
+  const label   = document.getElementById('frameAnimLabel');
+  if (!canvas || !section) return;
+
+  // ── Reduced-motion fallback ──────────────────
+  if (prefersReducedMotion) {
+    const img = new Image();
+    img.src = 'animation-asset/webp/frame-050.webp';
+    img.onload = () => {
+      const ctx = canvas.getContext('2d');
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      ctx.drawImage(img, 0, 0);
+    };
+    return;
+  }
+
+  // ── Bandwidth tier detection ─────────────────
+  // Network Info API → skip 1 (fast) / 2 (medium) / 4 (slow)
+  function getBandwidthTier() {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!conn) return 'fast'; // unknown → assume best
+    const { effectiveType, downlink } = conn;
+    if (effectiveType === 'slow-2g' || effectiveType === '2g' || downlink < 1) return 'slow';
+    if (effectiveType === '3g' || downlink < 5) return 'medium';
+    return 'fast';
+  }
+
+  const TOTAL_FRAMES = 100;
+  const FRAME_BASE   = 'animation-asset/webp/frame-';
+  const tier = getBandwidthTier();
+  const SKIP = tier === 'slow' ? 4 : tier === 'medium' ? 2 : 1;
+  const QUALITY_LABEL = tier === 'slow' ? 'eco · 25f' : tier === 'medium' ? 'balanced · 50f' : 'full · 100f';
+
+  // Build frame index list based on skip
+  const frameIndices = [];
+  for (let i = 1; i <= TOTAL_FRAMES; i += SKIP) frameIndices.push(i);
+  const N = frameIndices.length;
+
+  // ── DOM extras ──────────────────────────────
+  const badge = document.createElement('div');
+  badge.className = 'frame-anim-badge';
+  badge.textContent = QUALITY_LABEL;
+  section.querySelector('.frame-anim-sticky').appendChild(badge);
+
+  const progressBar = document.createElement('div');
+  progressBar.className = 'frame-anim-progress';
+  section.querySelector('.frame-anim-sticky').appendChild(progressBar);
+
+  // ── Image pool ───────────────────────────────
+  const images = new Array(N).fill(null);
+  let loadedCount = 0;
+  let animReady = false;
+
+  // Pad number to 3 digits
+  function pad(n) { return String(n).padStart(3, '0'); }
+
+  // Prioritised loading: first + last + middle first, then fill gaps
+  function preloadAll() {
+    const priority = [0, N - 1, Math.floor(N / 2)];
+    const queue = [
+      ...priority,
+      ...frameIndices.map((_, i) => i).filter(i => !priority.includes(i))
+    ];
+
+    let qi = 0;
+    function loadNext() {
+      if (qi >= queue.length) return;
+      const idx = queue[qi++];
+      const img = new Image();
+      img.src = `${FRAME_BASE}${pad(frameIndices[idx])}.webp`;
+      img.decoding = 'async';
+      img.onload = () => {
+        images[idx] = img;
+        loadedCount++;
+        // First frame ready → init canvas, mark ready, show badge
+        if (loadedCount === 1 && images[0]) {
+          canvas.width  = images[0].naturalWidth;
+          canvas.height = images[0].naturalHeight;
+          drawFrame(0);
+          animReady = true;
+          badge.classList.add('visible');
+          buildScrollTrigger();
+        }
+        loadNext();
+      };
+      img.onerror = () => { loadedCount++; loadNext(); };
+    }
+    // Start 4 parallel loads
+    for (let p = 0; p < Math.min(4, queue.length); p++) loadNext();
+  }
+
+  // ── Draw ─────────────────────────────────────
+  const ctx = canvas.getContext('2d');
+  let currentIdx = -1;
+
+  function drawFrame(idx) {
+    const clamped = Math.max(0, Math.min(N - 1, idx));
+    if (clamped === currentIdx) return;
+    const img = images[clamped];
+    if (!img) return; // not loaded yet — show previous
+    currentIdx = clamped;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // progress bar
+    progressBar.style.width = `${(clamped / (N - 1)) * 100}%`;
+  }
+
+  // ── GSAP ScrollTrigger ────────────────────────
+  function buildScrollTrigger() {
+    const proxy = { frame: 0 };
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 0.5,
+      onUpdate(self) {
+        if (!animReady) return;
+        const idx = Math.round(self.progress * (N - 1));
+        drawFrame(idx);
+
+        // Update label text
+        if (label) {
+          const pct = Math.round(self.progress * 100);
+          label.textContent = pct < 5
+            ? 'Scroll to reveal'
+            : pct >= 98 ? 'Assembly complete' : `Frame ${idx * SKIP + 1} / ${TOTAL_FRAMES}`;
+        }
+      },
+    });
+  }
+
+  // ── Canvas resize ────────────────────────────
+  function resizeCanvas() {
+    if (!images[0]) return;
+    canvas.width  = images[0].naturalWidth;
+    canvas.height = images[0].naturalHeight;
+    drawFrame(currentIdx); // redraw after resize
+  }
+  window.addEventListener('resize', resizeCanvas, { passive: true });
+
+  // Kick off
+  preloadAll();
+})();
+

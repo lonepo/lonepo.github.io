@@ -1,0 +1,15 @@
+# Raw animation frames (high-quality PNGs — use WebP in animation-asset/webp/)
+animation-asset/*.png
+
+# Source zip
+*.zip
+
+# Video files
+*.mp4
+*.mov
+*.avi
+*.webm
+
+# Root-level jpeg dumps
+*.jpeg
+*.jpg

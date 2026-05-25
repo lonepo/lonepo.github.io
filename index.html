@@ -137,6 +137,20 @@
     <div class="hero-scroll-hint">scroll</div>
   </section>
 
+  <!-- ===== FRAME ANIMATION — scroll-driven PCB reveal ===== -->
+  <section class="frame-anim-section" id="frame-anim" aria-label="PCB assembly animation">
+    <div class="frame-anim-sticky">
+      <canvas class="frame-anim-canvas" id="frameAnimCanvas" aria-hidden="true"></canvas>
+      <div class="frame-anim-overlay" id="frameAnimOverlay">
+        <p class="frame-anim-label" id="frameAnimLabel">Scroll to reveal</p>
+      </div>
+      <!-- Low-bandwidth fallback -->
+      <noscript>
+        <img src="animation-asset/webp/frame-050.webp" alt="PCB assembly mid-point" class="frame-anim-fallback" />
+      </noscript>
+    </div>
+  </section>
+
   <!-- ===== ABOUT ===== -->
   <section class="section" id="about">
     <div class="container">
