@@ -1,0 +1,11 @@
+[
+  {
+    "slug": "first-blog",
+    "title": "First Blog",
+    "excerpt": "Starting somewhere is always the hardest part. Here's what's on my mind as I open this little corner of the internet.",
+    "date": "2026-05-23",
+    "dateLabel": "May 23, 2026",
+    "readTime": "3 min read",
+    "tags": ["thoughts"]
+  }
+]

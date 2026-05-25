@@ -23,6 +23,71 @@
       document.documentElement.setAttribute('data-theme', saved);
     })();
   </script>
+
+  <style>
+    /* ── Blog index extras ── */
+    .blog-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .filter-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-pill:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .filter-pill.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: var(--bg-primary);
+    }
+
+    .blog-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .blog-listing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .blog-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 0;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+    }
+
+    /* tag color helpers for JS-generated tags */
+    .tag.thoughts { color: var(--accent-blue); background: rgba(77,166,255,0.08); }
+    .tag.electronics { color: var(--accent-green); background: rgba(61,220,132,0.08); }
+    .tag.foss { color: var(--accent-orange); background: rgba(255,140,66,0.08); }
+    .tag.ai { color: var(--accent-blue); background: rgba(77,166,255,0.08); }
+
+    @media (max-width: 600px) {
+      .blog-listing-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
@@ -58,58 +123,145 @@
   <!-- POSTS LISTING -->
   <main class="blog-listing">
     <div class="container">
-      <div class="blog-listing-grid">
 
-        <a href="first-blog.html" class="blog-card reveal-card">
-          <div class="blog-card-meta">
-            <span class="blog-date">May 23, 2026</span>
-            <span class="blog-read-time">3 min read</span>
-          </div>
-          <h2 class="blog-card-title">First Blog</h2>
-          <p class="blog-card-excerpt">Starting somewhere is always the hardest part. Here's what's on my mind as I open this little corner of the internet.</p>
-          <div class="blog-card-tags">
-            <span class="tag blue">thoughts</span>
-          </div>
-          <span class="blog-card-cta">Read post →</span>
-        </a>
+      <!-- Tag filter pills — populated by JS -->
+      <div class="blog-filters" id="blogFilters" role="group" aria-label="Filter by tag"></div>
 
-        <!-- Add new post cards above this line -->
+      <!-- Post count -->
+      <p class="blog-count" id="blogCount" aria-live="polite"></p>
 
-      </div>
+      <!-- Cards grid — populated by JS -->
+      <div class="blog-listing-grid" id="blogGrid" aria-label="Blog posts"></div>
+
     </div>
   </main>
 
   <!-- FOOTER -->
   <footer class="footer">
     <div class="container">
-      <p>© 2026 Gautam · <a href="../" style="color:var(--accent-green)">← Back to portfolio</a></p>
+      <p>Built with ♥ · <a href="../" style="color:var(--accent-green)">← Back to portfolio</a></p>
     </div>
   </footer>
 
   <script>
     gsap.registerPlugin(ScrollTrigger);
-    // Theme
+
+    // ── Theme ────────────────────────────────────────────
     document.getElementById('themeToggle').addEventListener('click', () => {
       const h = document.documentElement;
       const next = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       h.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
     });
-    // Hamburger
+
+    // ── Hamburger ────────────────────────────────────────
     const ham = document.getElementById('hamburger');
     const nl  = document.getElementById('nav-links');
     ham?.addEventListener('click', () => nl.classList.toggle('open'));
-    // Reveal cards — handle both in-viewport and scrolled-to cards
-    gsap.utils.toArray('.reveal-card').forEach((el, i) => {
-      gsap.from(el, {
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 100%',
-          toggleActions: 'play none none none'
-        },
-        opacity: 0, y: 50, duration: 0.7, delay: i * 0.1, ease: 'power3.out'
+
+    // ── Tag colour map ───────────────────────────────────
+    const tagColour = (tag) => {
+      const map = {
+        thoughts: 'blue', electronics: 'green', foss: 'orange',
+        ai: 'blue', linux: 'orange', hardware: 'green', sustainability: 'green',
+      };
+      return map[tag.toLowerCase()] || 'blue';
+    };
+
+    // ── Build a card element ─────────────────────────────
+    function buildCard(post) {
+      const a = document.createElement('a');
+      a.href = `${post.slug}.html`;
+      a.className = 'blog-card';
+      a.dataset.tags = post.tags.join(' ');
+      a.innerHTML = `
+        <div class="blog-card-meta">
+          <span class="blog-date">${post.dateLabel}</span>
+          <span class="blog-read-time">${post.readTime}</span>
+        </div>
+        <h2 class="blog-card-title">${post.title}</h2>
+        <p class="blog-card-excerpt">${post.excerpt}</p>
+        <div class="blog-card-tags">
+          ${post.tags.map(t => `<span class="tag ${tagColour(t)}">${t}</span>`).join('')}
+        </div>
+        <span class="blog-card-cta">Read post →</span>`;
+      return a;
+    }
+
+    // ── Render cards with GSAP stagger ───────────────────
+    function renderCards(posts) {
+      const grid = document.getElementById('blogGrid');
+      const count = document.getElementById('blogCount');
+      grid.innerHTML = '';
+
+      if (!posts.length) {
+        grid.innerHTML = '<p class="blog-empty">No posts match this filter.</p>';
+        count.textContent = '';
+        return;
+      }
+
+      count.textContent = `${posts.length} post${posts.length === 1 ? '' : 's'}`;
+
+      posts.forEach(post => grid.appendChild(buildCard(post)));
+
+      gsap.from(grid.querySelectorAll('.blog-card'), {
+        opacity: 0,
+        y: 30,
+        duration: 0.55,
+        stagger: 0.1,
+        ease: 'power3.out',
+        clearProps: 'all',
       });
-    });
+    }
+
+    // ── Build filter pills ───────────────────────────────
+    function buildFilters(allPosts) {
+      const filtersEl = document.getElementById('blogFilters');
+      const allTags = [...new Set(allPosts.flatMap(p => p.tags))].sort();
+
+      let activeTag = 'all';
+
+      function filter(tag) {
+        activeTag = tag;
+        filtersEl.querySelectorAll('.filter-pill').forEach(p => {
+          p.classList.toggle('active', p.dataset.tag === tag);
+        });
+        const shown = tag === 'all'
+          ? allPosts
+          : allPosts.filter(p => p.tags.includes(tag));
+        renderCards(shown);
+      }
+
+      // "All" pill
+      const allPill = document.createElement('button');
+      allPill.className = 'filter-pill active';
+      allPill.textContent = 'All';
+      allPill.dataset.tag = 'all';
+      allPill.addEventListener('click', () => filter('all'));
+      filtersEl.appendChild(allPill);
+
+      allTags.forEach(tag => {
+        const pill = document.createElement('button');
+        pill.className = 'filter-pill';
+        pill.textContent = tag;
+        pill.dataset.tag = tag;
+        pill.addEventListener('click', () => filter(tag));
+        filtersEl.appendChild(pill);
+      });
+    }
+
+    // ── Fetch posts.json, sort newest-first, render ──────
+    fetch('posts.json')
+      .then(r => r.json())
+      .then(posts => {
+        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        buildFilters(posts);
+        renderCards(posts);
+      })
+      .catch(() => {
+        document.getElementById('blogGrid').innerHTML =
+          '<p class="blog-empty">Could not load posts. Try refreshing.</p>';
+      });
   </script>
 </body>
 </html>
