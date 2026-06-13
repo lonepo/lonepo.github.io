@@ -91,19 +91,20 @@ function designInverter(params) {
   };
 
   checks.pll_bw = {
-    pass: omega_n > 2 * PI2 * f_g,
-    msg: `PLL ωₙ = ${(omega_n / PI2).toFixed(1)} Hz > 2×f_g = ${(2 * f_g).toFixed(1)} Hz`,
+    pass: omega_n < PI2 * 0.2 * f_g,
+    msg: `PLL ωₙ = ${(omega_n / PI2).toFixed(1)} Hz < 0.2×f_g = ${(0.2 * f_g).toFixed(1)} Hz`,
   };
 
   checks.attenuation = {
-    pass: attenuation_dB > 20,
-    msg: `Attenuation = ${attenuation_dB.toFixed(1)} dB > 20 dB`,
+    pass: attenuation_dB < -20,
+    msg: `Attenuation = ${attenuation_dB.toFixed(1)} dB < -20 dB`,
   };
 
-  const Prd_est = Vg_LL ** 2 * Cf * PI2 * f_res * 0.1;
+  const I_ripple_rms = delta_I_actual / Math.sqrt(3);
+  const Prd_est = Rd * (I_ripple_rms ** 2) * 3;
   checks.rd_power = {
-    pass: Prd_est < 5.0,
-    msg: `Rd power ≈ ${Prd_est.toFixed(2)} W (< 5W ok)`,
+    pass: Prd_est < 50.0,
+    msg: `Rd power ≈ ${Prd_est.toFixed(2)} W (< 50W ok)`,
   };
 
   const all_passed = Object.values(checks).every((c) => c.pass);

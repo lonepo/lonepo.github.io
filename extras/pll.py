@@ -184,22 +184,20 @@ def design_inverter(P_rated, Vg_LL, f_g, f_sw, Vdc=None, ripple_percent=0.15,
     check3_msg = f"Current loop BW = {alpha/(2*math.pi):.1f} Hz < 0.1*f_sw = {0.1*f_sw:.1f} Hz"
 
     # Check 4: PLL bandwidth relative to grid frequency
-    # Should be > 2*f_g (fast enough) and < f_g/2? Actually PLL BW is typically 5-10% of f_g.
-    # Here we just check it's > 2*f_g to avoid slow tracking.
-    checks['pll_bandwidth'] = omega_n > 2 * 2 * math.pi * f_g
-    check4_msg = f"PLL nat freq = {omega_n/(2*math.pi):.1f} Hz > 2*f_g = {2*f_g:.1f} Hz"
+    # Should be slow enough to reject grid harmonics (< 0.2*f_g)
+    checks['pll_bandwidth'] = omega_n < 2 * math.pi * 0.2 * f_g
+    check4_msg = f"PLL nat freq = {omega_n/(2*math.pi):.1f} Hz < 0.2*f_g = {0.2*f_g:.1f} Hz"
 
-    # Check 5: Attenuation at switching frequency should be > 20 dB
-    checks['attenuation'] = attenuation_dB > 20
-    check5_msg = f"Switching attenuation = {attenuation_dB:.1f} dB > 20 dB"
+    # Check 5: Attenuation at switching frequency should be < -20 dB
+    checks['attenuation'] = attenuation_dB < -20
+    check5_msg = f"Switching attenuation = {attenuation_dB:.1f} dB < -20 dB"
 
     # Check 6: Damping resistor power rating (estimate)
-    # Worst-case power in Rd at resonance (simplified)
-    # Use: P_Rd_max = (Vg_LL^2) * Cf * 2*pi*f_res * (some factor)
-    # Not a strict design limit but useful as a sanity check.
-    Prd_est = (Vg_LL**2) * Cf * 2 * math.pi * f_res * 0.1   # Rough estimate
-    checks['rd_power'] = Prd_est < 5.0                    # < 5 W is acceptable
-    check6_msg = f"Estimated Rd power = {Prd_est:.2f} W (<5W is fine)"
+    # Power dissipated by Rd comes from switching ripple current
+    I_ripple_rms = delta_I_actual / math.sqrt(3)  # Triangle wave RMS approx
+    Prd_est = Rd * (I_ripple_rms**2) * 3          # 3 phases
+    checks['rd_power'] = Prd_est < 50.0           # < 50W is acceptable for large systems
+    check6_msg = f"Estimated Rd power = {Prd_est:.2f} W (<50W is fine)"
 
     # =========================================================================
     # 7. COMPILE RESULTS
