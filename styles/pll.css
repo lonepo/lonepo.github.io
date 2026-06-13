@@ -1,0 +1,591 @@
+/* =============================================
+   PLL BLOG POST — Interactive article styles
+   Canvas containers, calculator, block diagram
+============================================= */
+
+/* ── Section Spacing ── */
+.pll-section {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.pll-section:nth-child(even) {
+  background: var(--bg-secondary);
+}
+
+.pll-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--accent-green);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pll-section-label::before {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: var(--accent-green);
+}
+
+.pll-section h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.pll-section .prose {
+  max-width: 720px;
+}
+
+/* ── Canvas Container ── */
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 2.5rem auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  overflow: hidden;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.canvas-wrap canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.canvas-label {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ── Split Canvas Layout (Clarke section) ── */
+.canvas-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 2.5rem auto;
+}
+
+.canvas-split .canvas-wrap {
+  max-width: none;
+  margin: 0;
+}
+
+.canvas-split-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 700px) {
+  .canvas-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── PLL Interactive Controls ── */
+.pll-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.pll-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.55rem 1.4rem;
+  border: 1px solid var(--accent-green);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--accent-green);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.pll-btn:hover {
+  background: var(--accent-green);
+  color: var(--bg-primary);
+  box-shadow: 0 0 20px rgba(61, 220, 132, 0.3);
+}
+
+.pll-btn:active {
+  transform: scale(0.97);
+}
+
+.pll-btn.running {
+  background: var(--accent-green);
+  color: var(--bg-primary);
+}
+
+.pll-slider-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pll-slider-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.pll-slider-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent-blue);
+  min-width: 3ch;
+  text-align: right;
+}
+
+/* ── Custom Range Slider ── */
+.pll-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 140px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--bg-tertiary);
+  outline: none;
+  transition: background 0.2s;
+}
+
+.pll-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(61, 220, 132, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pll-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 14px rgba(61, 220, 132, 0.6);
+}
+
+.pll-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px rgba(61, 220, 132, 0.4);
+}
+
+/* ── Error Plot (small canvas beside PLL) ── */
+.pll-vis-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 2.5rem auto 0;
+}
+
+.pll-vis-row .canvas-wrap {
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .pll-vis-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Block Diagram Container ── */
+.diagram-wrap {
+  width: 100%;
+  max-width: 860px;
+  margin: 2.5rem auto;
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.diagram-wrap svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 600px;
+}
+
+.diagram-tooltip {
+  position: absolute;
+  padding: 0.6rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-hover);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 100;
+  max-width: 280px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.diagram-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Calculator Section ── */
+.calc-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.calc-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.calc-field label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.calc-field input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.calc-field input:focus {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px var(--glow-green);
+}
+
+.calc-field input:invalid {
+  border-color: #ff4d6a;
+}
+
+.calc-field .calc-unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* ── Advanced Toggle ── */
+.calc-advanced-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent-blue);
+  cursor: pointer;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  margin-bottom: 1rem;
+  transition: all 0.25s ease;
+}
+
+.calc-advanced-toggle:hover {
+  color: var(--accent-green);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 12px var(--glow-green);
+}
+
+.calc-advanced-toggle .chevron {
+  transition: transform 0.3s ease;
+  font-size: 0.7rem;
+}
+
+.calc-advanced-toggle.open .chevron {
+  transform: rotate(180deg);
+}
+
+.calc-advanced-toggle.open {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+.calc-advanced {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calc-advanced.open {
+  max-height: 500px;
+}
+
+/* ── Result Cards ── */
+.calc-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.calc-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.calc-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.calc-card-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-green);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.calc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.3rem 0;
+}
+
+.calc-row-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.calc-row-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ── Verification Badges ── */
+.calc-checks {
+  margin-top: 2rem;
+}
+
+.calc-checks h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.check-item:last-child {
+  border-bottom: none;
+}
+
+.check-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.check-badge.pass {
+  background: rgba(61, 220, 132, 0.15);
+  color: var(--accent-green);
+  animation: badgePulse 0.5s ease;
+}
+
+.check-badge.fail {
+  background: rgba(255, 77, 106, 0.15);
+  color: #ff4d6a;
+  animation: badgePulse 0.5s ease;
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.check-msg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+/* ── KaTeX Overrides ── */
+.pll-section .katex-display {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.pll-section .katex {
+  font-size: 1.05em;
+  color: var(--text-primary);
+}
+
+/* ── Equation Highlight Box ── */
+.eq-box {
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-blue);
+  border-radius: 0 8px 8px 0;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+/* ── Phase Legend ── */
+.phase-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+}
+
+.phase-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+}
+
+.phase-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.phase-dot.a { background: var(--accent-blue); box-shadow: 0 0 6px rgba(77, 166, 255, 0.4); }
+.phase-dot.b { background: var(--accent-green); box-shadow: 0 0 6px rgba(61, 220, 132, 0.4); }
+.phase-dot.c { background: var(--accent-orange); box-shadow: 0 0 6px rgba(255, 140, 66, 0.4); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .pll-section {
+    padding: 4rem 0;
+  }
+
+  .canvas-wrap {
+    border-radius: 8px;
+  }
+
+  .pll-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pll-slider-group {
+    width: 100%;
+  }
+
+  .pll-slider {
+    flex: 1;
+  }
+
+  .calc-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .calc-results {
+    grid-template-columns: 1fr;
+  }
+
+  .diagram-wrap {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calc-form {
+    grid-template-columns: 1fr;
+  }
+
+  .phase-legend {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

@@ -1,5 +1,14 @@
 [
   {
+    "slug": "pll",
+    "title": "How Phase Locked Loops Actually Work",
+    "excerpt": "A visual, interactive guide to PLLs — from dancing sine waves to locking onto the grid. With live animations and a design calculator.",
+    "date": "2026-06-13",
+    "dateLabel": "Jun 13, 2026",
+    "readTime": "15 min read",
+    "tags": ["power electronics", "controls"]
+  },
+  {
     "slug": "first-blog",
     "title": "First Blog",
     "excerpt": "Starting somewhere is always the hardest part. Here's what's on my mind as I open this little corner of the internet.",

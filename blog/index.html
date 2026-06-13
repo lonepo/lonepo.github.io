@@ -83,6 +83,8 @@
     .tag.electronics { color: var(--accent-green); background: rgba(61,220,132,0.08); }
     .tag.foss { color: var(--accent-orange); background: rgba(255,140,66,0.08); }
     .tag.ai { color: var(--accent-blue); background: rgba(77,166,255,0.08); }
+    .tag.power-electronics { color: var(--accent-orange); background: rgba(255,140,66,0.08); }
+    .tag.controls { color: var(--accent-green); background: rgba(61,220,132,0.08); }
 
     @media (max-width: 600px) {
       .blog-listing-grid { grid-template-columns: 1fr; }
@@ -164,6 +166,7 @@
       const map = {
         thoughts: 'blue', electronics: 'green', foss: 'orange',
         ai: 'blue', linux: 'orange', hardware: 'green', sustainability: 'green',
+        'power electronics': 'orange', controls: 'green',
       };
       return map[tag.toLowerCase()] || 'blue';
     };
