@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLL Visualizer · Gautam</title>
+  <meta name="description" content="Interactive animations and formulas for Phase Locked Loops — Clarke transform, Park transform, and SRF-PLL lock-on visualized." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../styles/global.css" />
+  <link rel="stylesheet" href="../styles/components.css" />
+  <link rel="stylesheet" href="../styles/blog.css" />
+  <link rel="stylesheet" href="../styles/pll.css" />
+
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav scrolled" id="nav">
+    <a href="../" class="nav-logo">G<span class="logo-dot">.</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="../#about" class="nav-link">About</a></li>
+      <li><a href="../#projects" class="nav-link">Projects</a></li>
+      <li><a href="../blog/" class="nav-link active">Blog</a></li>
+      <li><a href="../#contact" class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- POST HEADER -->
+  <header class="post-header">
+    <div class="container">
+      <a href="./index.html" class="post-back">← All posts</a>
+      <div class="post-meta">
+        <span class="post-date">Jun 13, 2026</span>
+        <span class="post-read-time">Visual Reference</span>
+        <div class="post-tags">
+          <span class="tag blue">power electronics</span>
+          <span class="tag green">controls</span>
+        </div>
+      </div>
+      <h1 class="post-title">PLL — Animations & Formulas</h1>
+      <p class="post-excerpt">All the interactive visualizations and math from the PLL article, nothing else. <a href="./pll.html" style="color:var(--accent-green)">Read the full article →</a></p>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 1: SINGLE-PHASE VOLTAGE
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="pll-section" id="sec-intro">
+    <div class="container">
+      <h2>Single-Phase Voltage</h2>
+      <div class="prose">
+        <div class="eq-box">
+          $$v(t) = V_m \sin(\omega t + \varphi)$$
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 2: THREE-PHASE GRID WAVEFORMS
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="pll-section" id="sec-grid">
+    <div class="container">
+      <h2>Three-Phase Grid Voltage</h2>
+
+      <!-- Canvas: 3-phase grid -->
+      <div class="canvas-wrap">
+        <canvas id="canvasGrid"></canvas>
+        <span class="canvas-label">3-Phase Grid Voltage</span>
+      </div>
+
+      <div class="phase-legend">
+        <div class="phase-legend-item"><span class="phase-dot a"></span> Phase A</div>
+        <div class="phase-legend-item"><span class="phase-dot b"></span> Phase B</div>
+        <div class="phase-legend-item"><span class="phase-dot c"></span> Phase C</div>
+      </div>
+
+      <div class="prose">
+        <div class="eq-box">
+          $$v_a = V_m \sin(\omega t)$$
+          $$v_b = V_m \sin\!\left(\omega t - \frac{2\pi}{3}\right)$$
+          $$v_c = V_m \sin\!\left(\omega t + \frac{2\pi}{3}\right)$$
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 3: INVERTER vs GRID
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="pll-section" id="sec-spwm">
+    <div class="container">
+      <h2>Inverter vs Grid — Phase Error</h2>
+
+      <!-- Canvas: SPWM vs Grid -->
+      <div class="canvas-wrap">
+        <canvas id="canvasSPWM"></canvas>
+        <span class="canvas-label">Inverter (vivid) vs Grid (faded)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 4: CLARKE TRANSFORM (αβ)
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="pll-section" id="sec-clarke">
+    <div class="container">
+      <h2>Clarke Transform — abc → αβ</h2>
+
+      <!-- Split Canvas: ABC | αβ plane -->
+      <div class="canvas-split">
+        <div>
+          <div class="canvas-wrap">
+            <canvas id="canvasClarkeABC"></canvas>
+          </div>
+          <div class="canvas-split-label">abc waveforms</div>
+        </div>
+        <div>
+          <div class="canvas-wrap">
+            <canvas id="canvasClarkeAB"></canvas>
+          </div>
+          <div class="canvas-split-label">αβ plane</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <div class="eq-box">
+          $$\begin{bmatrix} v_\alpha \\ v_\beta \end{bmatrix} = \frac{2}{3}\begin{bmatrix} 1 & -\frac{1}{2} & -\frac{1}{2} \\ 0 & \frac{\sqrt{3}}{2} & -\frac{\sqrt{3}}{2} \end{bmatrix} \begin{bmatrix} v_a \\ v_b \\ v_c \end{bmatrix}$$
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 5: PARK TRANSFORM (dq) + PLL LOCK-ON
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="pll-section" id="sec-pll">
+    <div class="container">
+      <h2>Park Transform + PLL Lock-On</h2>
+
+      <!-- PLL Animation -->
+      <div class="pll-vis-row">
+        <div class="canvas-wrap">
+          <canvas id="canvasPLL"></canvas>
+          <span class="canvas-label">αβ plane + dq frame</span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="canvasError"></canvas>
+          <span class="canvas-label">Phase error θₑ</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="pll-controls">
+        <button class="pll-btn" id="pllStartBtn">Start PLL</button>
+        <div class="pll-slider-group">
+          <span class="pll-slider-label">Damping ζ:</span>
+          <input type="range" class="pll-slider" id="dampingSlider"
+                 min="0.2" max="2.0" step="0.05" value="0.707" />
+          <span class="pll-slider-value" id="dampingValue">0.71</span>
+        </div>
+      </div>
+
+      <div class="prose" style="margin-top: 2rem;">
+        <div class="eq-box">
+          $$\begin{bmatrix} v_d \\ v_q \end{bmatrix} = \begin{bmatrix} \cos\hat\theta & \sin\hat\theta \\ -\sin\hat\theta & \cos\hat\theta \end{bmatrix} \begin{bmatrix} v_\alpha \\ v_\beta \end{bmatrix}$$
+        </div>
+
+        <div class="eq-box">
+          $$K_p = 2\zeta\omega_n \qquad K_i = \omega_n^2$$
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 6: BLOCK DIAGRAM
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="pll-section" id="sec-diagram">
+    <div class="container">
+      <h2>SRF-PLL Block Diagram</h2>
+
+      <!-- SVG Diagram -->
+      <div class="diagram-wrap" id="pllDiagram"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Gautam · <a href="./pll.html" style="color:var(--accent-green)">Full PLL article →</a> · <a href="../blog/" style="color:var(--accent-green)">← Back to blog</a></p>
+    </div>
+  </footer>
+
+  <!-- Scripts (order matters: animations + diagram + calculator first, then orchestrator) -->
+  <script src="../scripts/pll/pll-animations.js"></script>
+  <script src="../scripts/pll/pll-diagram.js"></script>
+  <script src="../scripts/pll/pll-calculator.js"></script>
+  <script src="../scripts/pll/pll-main.js"></script>
+</body>
+</html>

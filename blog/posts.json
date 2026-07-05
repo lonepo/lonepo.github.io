@@ -1,5 +1,14 @@
 [
   {
+    "slug": "pll-visual",
+    "title": "PLL — Animations & Formulas",
+    "excerpt": "All interactive visualizations and math from the PLL article — Clarke, Park, and SRF-PLL lock-on — nothing else.",
+    "date": "2026-07-05",
+    "dateLabel": "Jul 5, 2026",
+    "readTime": "Visual Reference",
+    "tags": ["power electronics", "controls"]
+  },
+  {
     "slug": "pll",
     "title": "How Phase Locked Loops Actually Work",
     "excerpt": "A visual, interactive guide to PLLs — from dancing sine waves to locking onto the grid. With live animations and a design calculator.",
